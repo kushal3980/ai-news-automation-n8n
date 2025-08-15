@@ -1,0 +1,233 @@
+{
+  "name": "News Automation to GMail",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "search about trending news in field of AI and return top 3 news headlines, and return with number points ",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        912,
+        416
+      ],
+      "id": "3afc4395-29ac-4468-9e1a-ea114b265e6b",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        896,
+        656
+      ],
+      "id": "e0839b68-52cd-424e-83cb-d7cbc3c57026",
+      "name": "Groq Chat Model1",
+      "credentials": {
+        "groqApi": {
+          "id": "RxCokW62tGeBItkR",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        640,
+        416
+      ],
+      "id": "5905a20a-8192-48f0-bb90-cd6e2cd4cd0e",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=generate a human readable content for 3 topics given in the below data, no extra text should be there and only on-point content you should use to generate the data : \n{{ $json.output }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1312,
+        416
+      ],
+      "id": "b1fc17ef-7a1d-4a79-894c-3d4a8b5436a7",
+      "name": "AI Agent2"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        1472,
+        656
+      ],
+      "id": "ab72e0cb-4b80-44df-8a67-6b3d4b17a777",
+      "name": "Groq Chat Model2",
+      "credentials": {
+        "groqApi": {
+          "id": "RxCokW62tGeBItkR",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        1616,
+        656
+      ],
+      "id": "6a8bce57-6039-4434-bcbd-86817c8149c9",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {
+        "sendTo": "202318006@dau.ac.in",
+        "subject": "Hy from Kushal",
+        "emailType": "text",
+        "message": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2032,
+        416
+      ],
+      "id": "ca3a2587-2c69-428f-9a86-c4b719bc7f10",
+      "name": "Get many threads",
+      "webhookId": "86660d90-45e6-445f-ae09-c995fdc7aeb1",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "jW4puQLbiHZhAlQ5",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a3ae597a-6a0f-4140-8621-3e9dbad2d5b8",
+              "name": "output",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1696,
+        416
+      ],
+      "id": "846045e4-d5a8-4974-8f22-8f9047c16043",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Groq Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Get many threads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "af650776-6fd6-43d5-9e8b-b9a0b6e4c368",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "50d50b3785f17106959b7db033c86d78c28084bc4ad31c747b8ba7496701102a"
+  },
+  "id": "CorTHwl8T4ixksch",
+  "tags": []
+}
